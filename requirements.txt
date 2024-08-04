@@ -1,0 +1,2 @@
+# pygameを追加
+pygame==2.6.0
