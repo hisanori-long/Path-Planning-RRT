@@ -21,10 +21,10 @@ def main():
 
     map.drawMap(obstacles)
 
-    while (iteration < 500):
+    while (not graph.path_to_goal()):
         if iteration % 10 == 0:
             X, Y, Parent = graph.bias(goal)
-            pygame.draw.circle(map.map, map.red, (X[-1], Y[-1]), map.nodeRad + 2, 0)
+            pygame.draw.circle(map.map, map.grey, (X[-1], Y[-1]), map.nodeRad + 2, 0)
             pygame.draw.line(map.map, map.blue, (X[-1], Y[-1]), (X[Parent[-1]], Y[Parent[-1]]), map.edgeThickness)
 
         else:
@@ -34,8 +34,10 @@ def main():
 
         if iteration % 1 == 0:
             pygame.display.update()
-            pygame.event.wait(10)
+            pygame.event.wait(20)
         iteration += 1
+
+    map.drawPath(graph.getPathCoords())
 
     while True:
 
@@ -49,6 +51,8 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            else:
+                main()
 
 
 if __name__ == '__main__':

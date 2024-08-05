@@ -37,8 +37,10 @@ class RRTMap:
         pygame.draw.circle(self.map, self.red, self.goal, self.nodeRad + 20, 1)
         self.drawObs(obstacles)
 
-    def drawPath(self):
-        pass
+    def drawPath(self, path):
+        for node in path:
+            pygame.draw.circle(self.map, self.red, node, self.nodeRad + 2, 0)
+
 
     def drawObs(self, obstacles):
         obstaclesList = obstacles.copy()
@@ -98,7 +100,6 @@ class RRTGraph:
     def add_node(self, n, x, y):
         self.x.insert(n, x)
         self.y.append(y)
-        print("add_node: ", x, y)
 
     def remove_node(self, n):
         self.x.pop(n)
@@ -190,10 +191,22 @@ class RRTGraph:
                 self.add_node(nrand, x, y) 
 
     def path_to_goal(self):
-        pass
+        if self.goalFlag:
+            self.path = []
+            self.path.append(self.goalstate)
+            newpos = self.parent[self.goalstate]
+            while (newpos != 0):
+                self.path.append(newpos)
+                newpos = self.parent[newpos]
+            self.path.append(0)
+        return self.goalFlag
 
     def getPathCoords(self):
-        pass
+        pathCoords = []
+        for node in self.path:
+            x, y = (self.x[node], self.y[node])
+            pathCoords.append((x, y))
+        return pathCoords
 
     # ゴールに一直線に向かう
     def bias(self, ngoal):
