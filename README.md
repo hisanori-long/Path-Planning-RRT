@@ -30,3 +30,9 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+5. サンプルコードを実行します
+
+```bash
+python3 RRT.py
+```

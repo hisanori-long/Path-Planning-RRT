@@ -98,6 +98,7 @@ class RRTGraph:
     def add_node(self, n, x, y):
         self.x.insert(n, x)
         self.y.append(y)
+        print("add_node: ", x, y)
 
     def remove_node(self, n):
         self.x.pop(n)
@@ -125,8 +126,15 @@ class RRTGraph:
         y = int(random.uniform(0, self.maph))
         return x, y
 
-    def nearest(self):
-        pass
+    # ノードnから最も近いノードのインデックスを返す
+    def nearest(self, n):
+        dmin = self.distance(0, n)
+        nnear = 0
+        for i in range(0, n):
+            if self.distance(i, n) < dmin:
+                dmin = self.distance(i, n)
+                nnear = i
+        return nnear
 
     # 最後に追加したノードが障害物と重なっていないか確認
     def isFree(self):
@@ -149,8 +157,8 @@ class RRTGraph:
                 x = x1 * u + x2 * (1 - u)
                 y = y1 * u + y2 * (1 - u)
                 if rectang.collidepoint(x, y): # 交差している
-                    return False
-        return True
+                    return True
+        return False
 
     def connect(self, n1, n2) -> bool:
         (x1, y1) = (self.x[n1], self.y[n1])
@@ -162,8 +170,24 @@ class RRTGraph:
             self.add_edge(n1, n2)
             return True
 
-    def step(self):
-        pass
+    # ノードnnearをノードnrandに向かわせる
+    # dmaxは最大移動距離
+    def step(self, nnear, nrand, dmax=35):
+        d = self.distance(nnear, nrand)
+        if d > dmax:
+            u = dmax / d
+            (xnear, ynear) = (self.x[nnear], self.y[nnear])
+            (xrand, yrand) = (self.x[nrand], self.y[nrand])
+            (px, py) = (xrand - xnear, yrand - ynear)
+            theta = math.atan2(py, px)
+            (x, y) = (int(xnear + dmax * math.cos(theta)), int(ynear + dmax * math.sin(theta)))
+            self.remove_node(nrand)
+            if abs(x - self.goal[0]) < dmax and abs(y - self.goal[1]) < dmax: # ゴールに到達
+                self.add_node(nrand, self.goal[0], self.goal[1])
+                self.goalstate = nrand
+                self.goalFlag = True
+            else:
+                self.add_node(nrand, x, y) 
 
     def path_to_goal(self):
         pass
@@ -171,11 +195,25 @@ class RRTGraph:
     def getPathCoords(self):
         pass
 
-    def bias(self):
-        pass
+    # ゴールに一直線に向かう
+    def bias(self, ngoal):
+        n = self.number_of_nodes()
+        self.add_node(n, ngoal[0], ngoal[1])
+        nnear = self.nearest(n) # ゴールに最も近いノード
+        self.step(nnear, n) 
+        self.connect(nnear, n)
+        return self.x, self.y, self.parent
 
+    # ノードをランダムに追加し、最近傍ノードに向かわせる
     def expand(self):
-        pass
+        n = self.number_of_nodes()
+        x, y = self.sample_envir() # ランダムな座標を生成
+        self.add_node(n, x, y)
+        if self.isFree(): # 生成したランダムな座標が障害物と重なっていない
+            xnearest = self.nearest(n) # 生成したランダムなノードに最も近いノードを取得
+            self.step(xnearest, n)
+            self.connect(xnearest, n)
+        return self.x, self.y, self.parent
 
     def cost(self):
         pass
