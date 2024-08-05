@@ -5,6 +5,10 @@ Mouad Boumediene - Hobby Coding さんの動画を参考にしました。
 
 参考：https://www.youtube.com/watch?v=TzfNzqjJ2VQ&list=PL9RPomGb9IpRlfQEGkWnTt8jIauPovpOH&pp=iAQB
 
+<!-- Youtube -->
+
+[![動作イメージ](https://img.youtube.com/vi/iUXCdYZ0xj4/0.jpg)](https://www.youtube.com/watch?v=iUXCdYZ0xj4)
+
 ## Set up
 
 1. リポジトリをクローンします
